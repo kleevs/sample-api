@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSampleApiDbContext();
+builder.Services.AddUsersHandler();
 
 var app = builder.Build();
 
