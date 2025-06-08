@@ -4,11 +4,24 @@ using Company.SampleApi.Tools;
 
 namespace Company.SampleApi;
 
-public class SearchUsersHandler : UserRequestHandler
+public class SearchUsersHandler
 {
-    public SearchUsersHandler(IUserRepository users) : base(users)
+    protected readonly IQueryable<User> _users;
+
+    public SearchUsersHandler(IUserRepository users)
     {
+        _users = users;
     }
 
-    public async Task<IEnumerable<User>> HandleAsync() => await _users.ToListAsync();
+    public async Task<IEnumerable<User>> HandleAsync(string? login) 
+    {
+        var query = _users;
+
+        if (!string.IsNullOrEmpty(login))
+        {
+            query = query.Where(_ => _.Login.StartsWith(login));
+        }
+
+        return await query.ToListAsync();
+    }
 }

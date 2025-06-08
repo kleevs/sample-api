@@ -1,12 +1,43 @@
 ﻿using Company.SampleApi.Contracts;
 using Company.SampleApi.Entities;
+using Company.SampleApi.Tools;
 
 namespace Company.SampleApi;
 
-public class CreateUserHandler : UserCommandHandler
+public class CreateUserHandler : IUserCreateService
 {
-    public CreateUserHandler(IUserRepository users, IUnitOfWork unitOfWork) : base(users, unitOfWork)
+    private readonly IUserRepository _users;
+    private readonly IPasswordValidator _passwordValidator;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CreateUserHandler(IUserRepository users, IUnitOfWork unitOfWork, IPasswordValidator passwordValidator)
     {
+        _users = users;
+        _unitOfWork = unitOfWork;
+        _passwordValidator = passwordValidator;
+    }
+
+    public async Task CreateUser(string login, string password)
+    {
+        var existedUser = await _users.Where(u => u.Login == login).FirstOrDefaultAsync();
+
+        if (existedUser is not null)
+        {
+            throw new Exception("login already exist");
+        }
+
+        if (!_passwordValidator.IsValidPassword(password)) 
+        {
+            throw new Exception("password is invalid");
+        }
+
+        var newUser = new User
+        {
+            Login = login,
+            Password = password
+        };
+
+        await _users.AddAsync(newUser);
     }
 
     public async Task HandleAsync(string login, string password)
@@ -21,21 +52,7 @@ public class CreateUserHandler : UserCommandHandler
             throw new ArgumentNullException(nameof(login));
         }
 
-        var existedUser = _users.Where(u => u.Login == login).FirstOrDefault();
-        var newUser = (existedUser ?? new User { Login = login }) with
-        {
-            Password = password
-        };
-
-        if (existedUser is not null)
-        {
-            _users.Update(newUser);
-        }
-        else
-        {
-            _users.Add(newUser);
-        }
-
+        await CreateUser(login, password);
         await _unitOfWork.SaveChangesAsync();
     }
 }

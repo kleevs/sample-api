@@ -11,15 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{7790F5EF-1C11-4F4F-8B78-A503EA417FBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.SampleApi.Api", "src\Company.SampleApi.Api\Company.SampleApi.Api.csproj", "{67AD3CAC-9EA2-4D32-937A-66E04608D1AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.SampleApi.Api", "src\Company.SampleApi.Api\Company.SampleApi.Api.csproj", "{67AD3CAC-9EA2-4D32-937A-66E04608D1AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.SampleApi.Entities", "src\Company.SampleApi.Entities\Company.SampleApi.Entities.csproj", "{3BEF58AD-5D23-4A02-A8CF-BF1F20C53634}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.SampleApi.Entities", "src\Company.SampleApi.Entities\Company.SampleApi.Entities.csproj", "{3BEF58AD-5D23-4A02-A8CF-BF1F20C53634}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{313F0FD6-62CE-440C-944A-7B12C35111C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.SampleApi.Database", "src\Company.SampleApi.Database\Company.SampleApi.Database.csproj", "{33C1A429-3E98-43E7-8550-955AB949D221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.SampleApi.Database", "src\Company.SampleApi.Database\Company.SampleApi.Database.csproj", "{33C1A429-3E98-43E7-8550-955AB949D221}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.SampleApi.Tools", "src\Company.SampleApi.Tools\Company.SampleApi.Tools.csproj", "{B7588512-541A-4F1B-B827-38A744020F41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.SampleApi.Tools", "src\Company.SampleApi.Tools\Company.SampleApi.Tools.csproj", "{B7588512-541A-4F1B-B827-38A744020F41}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{BBAE5AFC-FAF8-4E97-8E99-94DB8B65CB0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,7 +61,7 @@ Global
 		{3BEF58AD-5D23-4A02-A8CF-BF1F20C53634} = {7790F5EF-1C11-4F4F-8B78-A503EA417FBB}
 		{313F0FD6-62CE-440C-944A-7B12C35111C3} = {8C76C212-7640-492D-A5AF-8F44B02CD3A1}
 		{33C1A429-3E98-43E7-8550-955AB949D221} = {313F0FD6-62CE-440C-944A-7B12C35111C3}
-		{B7588512-541A-4F1B-B827-38A744020F41} = {7790F5EF-1C11-4F4F-8B78-A503EA417FBB}
+		{B7588512-541A-4F1B-B827-38A744020F41} = {BBAE5AFC-FAF8-4E97-8E99-94DB8B65CB0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1CF155A4-E635-4D39-8A4D-EC70FA2987CE}

@@ -9,30 +9,30 @@ internal class UserRepository : ProxyDbSet<User>, IUserRepository
 {
     private readonly SampleApiDbContext _context;
 
-    public UserRepository(SampleApiDbContext context) : base(context.Set<User>())
+    public UserRepository(SampleApiDbContext context) : base(context.Set<User>().AsNoTracking())
     {
         _context = context;
     }
 
-    public void Add(User user)
+    public async Task AddAsync(User user)
     {
-        _context.Set<User>().Add(user);
+        await _context.Set<User>().AddAsync(user);
     }
 
-    public void Delete(User user)
+    public async Task DeleteAsync(User user)
     {
         var users = _context.Set<User>();
-        var u = users.Where(_ => _.Login == user.Login).FirstOrDefault();
+        var u = await users.Where(_ => _.Login == user.Login).FirstOrDefaultAsync();
         if (u is not null) 
         {
             users.Remove(u);
         }
     }
 
-    public void Update(User user)
+    public async Task UpdateAsync(User user)
     {
         var users = _context.Set<User>();
-        var u = users.Where(_ => _.Login == user.Login).FirstOrDefault();
+        var u = await users.AsNoTracking().Where(_ => _.Login == user.Login).FirstOrDefaultAsync();
         if (u is not null) 
         {
             users.Update(u with 
@@ -56,6 +56,7 @@ public static class UserRepositoryConfiguration
     public static IServiceCollection AddUserRepository(this IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IQueryable<User>>(_ => _.GetRequiredService<IUserRepository>());
         return services;
     }
 }

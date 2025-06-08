@@ -1,22 +1,29 @@
 ﻿
+using Company.SampleApi.Contracts;
+
 namespace Company.SampleApi.Api.Endpoints;
 
 public static class UsersEndpoint
 {
-    public static IServiceCollection AddUsersHandler(this IServiceCollection services)
+    public static IServiceCollection AddUsers(this IServiceCollection services)
     {
         services.AddScoped<SearchUsersHandler>();
         services.AddScoped<CreateUserHandler>();
         services.AddScoped<UpdateUserHandler>();
         services.AddScoped<DeleteUserHandler>();
+        services.AddScoped<CreateOrUpdateUserHandler>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IPasswordValidator, PasswordValidator>();
+        services.AddScoped<IUserCreateService>(_ => _.GetRequiredService<CreateUserHandler>());
+        services.AddScoped<IUserUpdateService>(_ => _.GetRequiredService<UpdateUserHandler>());
         return services;
     }
 
     public static IEndpointRouteBuilder MapUsers(this IEndpointRouteBuilder app) 
     {
-        app.MapGet("/users", (SearchUsersHandler h) => h.HandleAsync());
-        app.MapPut("/users/{login}", (CreateUserHandler h, string login, string password) => h.HandleAsync(login, password));
-        app.MapPost("/users/{login}", (UpdateUserHandler h, string login, string password) => h.HandleAsync(login, password));
+        app.MapGet("/users", (SearchUsersHandler h, string? login) => h.HandleAsync(login));
+        app.MapPut("/users/{login}", (CreateOrUpdateUserHandler h, string login, string password, string? oldPassword) => h.HandleAsync(login, password, oldPassword));
+        app.MapPost("/users/new", (CreateUserHandler h, string login, string password) => h.HandleAsync(login, password));
         app.MapDelete("/users/{login}", (DeleteUserHandler h, string login) => h.HandleAsync(login));
         return app;
     }

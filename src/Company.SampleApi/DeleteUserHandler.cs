@@ -1,11 +1,17 @@
 ﻿using Company.SampleApi.Contracts;
+using Company.SampleApi.Tools;
 
 namespace Company.SampleApi;
 
-public class DeleteUserHandler : UserCommandHandler
+public class DeleteUserHandler
 {
-    public DeleteUserHandler(IUserRepository users, IUnitOfWork unitOfWork) : base(users, unitOfWork)
+    private readonly IUserRepository _users;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public DeleteUserHandler(IUserRepository users, IUnitOfWork unitOfWork)
     {
+        _users = users;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task HandleAsync(string login)
@@ -15,10 +21,10 @@ public class DeleteUserHandler : UserCommandHandler
             throw new ArgumentNullException(nameof(login));
         }
 
-        var existedUser = _users.Where(u => u.Login == login).FirstOrDefault();
+        var existedUser = await _users.Where(u => u.Login == login).FirstOrDefaultAsync();
         if (existedUser is not null)
         {
-            _users.Delete(existedUser);
+            await _users.DeleteAsync(existedUser);
         }
 
         await _unitOfWork.SaveChangesAsync();
