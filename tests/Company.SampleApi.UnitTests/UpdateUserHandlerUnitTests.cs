@@ -1,6 +1,8 @@
 using Company.SampleApi;
 using Company.SampleApi.Entities;
 using Moq;
+using Company.SampleApi.Tools.Testing;
+using Company.SampleApi.Contracts;
 
 namespace SampleApi.UnitTests;
 
@@ -9,18 +11,9 @@ public class UpdateUserHandlerUnitTests
     [Fact]
     public async Task Should_Update_User()
     {
-        var usersList = new List<User> 
-        {
-            new User { Login = "login", Password = "password" }
-        }.AsQueryable();
-        var users = new Mock<Company.SampleApi.Contracts.IUserRepository>();
-        users.Setup(_ => _.ElementType).Returns(usersList.ElementType);
-        users.Setup(_ => _.Expression).Returns(usersList.Expression);
-        users.Setup(_ => _.Provider).Returns(usersList.Provider);
-        users.Setup(_ => _.GetEnumerator()).Returns(usersList.GetEnumerator());
-        var passwordValidator = new Mock<Company.SampleApi.Contracts.IPasswordValidator>();
-        passwordValidator.Setup(_ => _.IsValidPassword(It.IsAny<string>())).Returns(true);
-        var unitOfWork = new Mock<Company.SampleApi.Contracts.IUnitOfWork>();
+        var users = new Mock<IUserRepository>().SetupDefault().SetupWithOneUser();
+        var passwordValidator = new Mock<IPasswordValidator>().SetupDefault();
+        var unitOfWork = new Mock<IUnitOfWork>();
 
         var service = new UpdateUserHandler(users.Object, unitOfWork.Object, passwordValidator.Object);
 
@@ -29,5 +22,33 @@ public class UpdateUserHandlerUnitTests
         unitOfWork.Verify(_ => _.SaveChangesAsync(default));
         passwordValidator.Verify(_ => _.IsValidPassword("newPassword"));
         users.Setup(_ => _.UpdateAsync(It.Is<User>(u => u.Password == "newPassword" && u.Login == "login")));
+    }
+
+    [Fact]
+    public async Task Should_Throw_Error_Because_Invalid_Password()
+    {
+        var users = new Mock<IUserRepository>().SetupDefault().SetupWithOneUser();
+        var passwordValidator = new Mock<IPasswordValidator>().SetupDefault().SetupIsValidPasswordFalse();
+        var unitOfWork = new Mock<IUnitOfWork>();
+
+        var service = new UpdateUserHandler(users.Object, unitOfWork.Object, passwordValidator.Object);
+
+        var error = await Assert.ThrowsAsync<Exception>(async () => await service.HandleAsync("login", "password", "newPassword"));
+
+        Assert.Equal("password is invalid", error.Message);
+    }
+
+    [Fact]
+    public async Task Should_Throw_Error_Because_Users_Is_Empty()
+    {
+        var users = new Mock<IUserRepository>().SetupDefault();
+        var passwordValidator = new Mock<IPasswordValidator>().SetupDefault().SetupIsValidPasswordFalse();
+        var unitOfWork = new Mock<IUnitOfWork>();
+
+        var service = new UpdateUserHandler(users.Object, unitOfWork.Object, passwordValidator.Object);
+
+        var error = await Assert.ThrowsAsync<Exception>(async () => await service.HandleAsync("login", "password", "newPassword"));
+
+        Assert.Equal("user or password is invalid", error.Message);
     }
 }
