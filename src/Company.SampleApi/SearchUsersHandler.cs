@@ -8,7 +8,7 @@ public class SearchUsersHandler
 {
     protected readonly IQueryable<User> _users;
 
-    public SearchUsersHandler(IUserRepository users)
+    public SearchUsersHandler(IQueryable<User> users)
     {
         _users = users;
     }

@@ -21,7 +21,7 @@ public class UpdateUserHandlerUnitTests
 
         unitOfWork.Verify(_ => _.SaveChangesAsync(default));
         passwordValidator.Verify(_ => _.IsValidPassword("newPassword"));
-        users.Setup(_ => _.UpdateAsync(It.Is<User>(u => u.Password == "newPassword" && u.Login == "login")));
+        users.Verify(_ => _.UpdateAsync(It.Is<User>(u => u.Password == "newPassword" && u.Login == "login")));
     }
 
     [Fact]

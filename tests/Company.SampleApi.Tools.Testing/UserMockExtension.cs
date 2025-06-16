@@ -22,4 +22,13 @@ public static class UserMockExtension
 
         return users;
     }
+
+    public static Mock<IUserRepository> SetupAddUser(this Mock<IUserRepository> users, string login)
+    {
+        var list = users.Object.ToList();
+        list.Add(new User { Login = login, Password = "password" });
+        users.SetupQueryable(list);
+
+        return users;
+    }
 }
