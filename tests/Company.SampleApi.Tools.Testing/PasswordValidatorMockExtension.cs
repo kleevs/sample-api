@@ -5,7 +5,7 @@ namespace Company.SampleApi.Tools.Testing;
 
 public static class PasswordValidatorMockExtension
 {
-    public static Mock<IPasswordValidator> SetupDefault(this Mock<IPasswordValidator> mock) 
+    public static Mock<IPasswordValidator> SetupIsValidPasswordTrue(this Mock<IPasswordValidator> mock)
     {
         mock.Setup(_ => _.IsValidPassword(It.IsAny<string>())).Returns(true);
         return mock;

@@ -11,8 +11,8 @@ public class UpdateUserHandlerUnitTests
     [Fact]
     public async Task Should_Update_User()
     {
-        var users = new Mock<IUserRepository>().SetupDefault().SetupWithOneUser();
-        var passwordValidator = new Mock<IPasswordValidator>().SetupDefault();
+        var users = new Mock<IUserRepository>().SetupDefault().SetupAddUser("login");
+        var passwordValidator = new Mock<IPasswordValidator>().SetupIsValidPasswordTrue();
         var unitOfWork = new Mock<IUnitOfWork>();
 
         var service = new UpdateUserHandler(users.Object, unitOfWork.Object, passwordValidator.Object);
@@ -27,8 +27,8 @@ public class UpdateUserHandlerUnitTests
     [Fact]
     public async Task Should_Throw_Error_Because_Invalid_Password()
     {
-        var users = new Mock<IUserRepository>().SetupDefault().SetupWithOneUser();
-        var passwordValidator = new Mock<IPasswordValidator>().SetupDefault().SetupIsValidPasswordFalse();
+        var users = new Mock<IUserRepository>().SetupDefault().SetupAddUser("login");
+        var passwordValidator = new Mock<IPasswordValidator>().SetupIsValidPasswordFalse();
         var unitOfWork = new Mock<IUnitOfWork>();
 
         var service = new UpdateUserHandler(users.Object, unitOfWork.Object, passwordValidator.Object);
@@ -42,7 +42,7 @@ public class UpdateUserHandlerUnitTests
     public async Task Should_Throw_Error_Because_Users_Is_Empty()
     {
         var users = new Mock<IUserRepository>().SetupDefault();
-        var passwordValidator = new Mock<IPasswordValidator>().SetupDefault().SetupIsValidPasswordFalse();
+        var passwordValidator = new Mock<IPasswordValidator>().SetupIsValidPasswordFalse();
         var unitOfWork = new Mock<IUnitOfWork>();
 
         var service = new UpdateUserHandler(users.Object, unitOfWork.Object, passwordValidator.Object);
