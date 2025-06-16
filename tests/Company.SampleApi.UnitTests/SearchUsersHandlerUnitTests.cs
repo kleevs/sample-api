@@ -10,7 +10,7 @@ public class SearchUsersHandlerUnitTests
     [Fact]
     public async Task Should_Return_All_Users()
     {
-        var users = new Mock<IUserRepository>().SetupDefault().SetupAddUser("user1").SetupAddUser("user2").SetupAddUser("user3");
+        var users = new Mock<IUserRepository>().SetupDefault().SetupAddUser("user1").SetupAddUser("user2").SetupAddUser(u => u with { Login = "user3" });
 
         var service = new SearchUsersHandler(users.Object);
 

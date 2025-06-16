@@ -13,10 +13,12 @@ public static class UserMockExtension
         return users;
     }
 
-    public static Mock<IUserRepository> SetupAddUser(this Mock<IUserRepository> users, string login)
+    public static Mock<IUserRepository> SetupAddUser(this Mock<IUserRepository> users, string login) => users.SetupAddUser(u => u with { Login = login });
+
+    public static Mock<IUserRepository> SetupAddUser(this Mock<IUserRepository> users, Func<User, User> config)
     {
         var list = users.Object.ToList();
-        list.Add(new User { Login = login, Password = "password" });
+        list.Add(config(new User { Login = "Login", Password = "password" }));
         users.SetupQueryable(list);
 
         return users;
