@@ -12,10 +12,6 @@ public static class UsersEndpoint
         services.AddScoped<UpdateUserHandler>();
         services.AddScoped<DeleteUserHandler>();
         services.AddScoped<CreateOrUpdateUserHandler>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IPasswordValidator, PasswordValidator>();
-        services.AddScoped<IUserCreateService>(_ => _.GetRequiredService<CreateUserHandler>());
-        services.AddScoped<IUserUpdateService>(_ => _.GetRequiredService<UpdateUserHandler>());
         return services;
     }
 

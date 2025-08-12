@@ -4,12 +4,12 @@ namespace Company.SampleApi;
 
 public class CreateOrUpdateUserHandler
 {
-    private readonly IUserService _users;
+    private readonly UserService _users;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateOrUpdateUserHandler(IUserService users, IUnitOfWork unitOfWork)
+    public CreateOrUpdateUserHandler(IUserRepository users, IUnitOfWork unitOfWork)
     {
-        _users = users;
+        _users = new UserService(users);
         _unitOfWork = unitOfWork;
     }
 

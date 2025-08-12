@@ -1,43 +1,16 @@
 ﻿using Company.SampleApi.Contracts;
-using Company.SampleApi.Entities;
-using Company.SampleApi.Tools;
 
 namespace Company.SampleApi;
 
-public class CreateUserHandler : IUserCreateService
+public class CreateUserHandler
 {
-    private readonly IUserRepository _users;
-    private readonly IPasswordValidator _passwordValidator;
+    private readonly UserService _users;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CreateUserHandler(IUserRepository users, IUnitOfWork unitOfWork, IPasswordValidator passwordValidator)
+    public CreateUserHandler(IUserRepository users, IUnitOfWork unitOfWork)
     {
-        _users = users;
+        _users = new UserService(users);
         _unitOfWork = unitOfWork;
-        _passwordValidator = passwordValidator;
-    }
-
-    public async Task CreateUser(string login, string password)
-    {
-        var existedUser = await _users.Where(u => u.Login == login).FirstOrDefaultAsync();
-
-        if (existedUser is not null)
-        {
-            throw new Exception("login already exist");
-        }
-
-        if (!_passwordValidator.IsValidPassword(password)) 
-        {
-            throw new Exception("password is invalid");
-        }
-
-        var newUser = new User
-        {
-            Login = login,
-            Password = password
-        };
-
-        await _users.AddAsync(newUser);
     }
 
     public async Task HandleAsync(string login, string password)
@@ -52,7 +25,7 @@ public class CreateUserHandler : IUserCreateService
             throw new ArgumentNullException(nameof(login));
         }
 
-        await CreateUser(login, password);
+        await _users.CreateUser(login, password);
         await _unitOfWork.SaveChangesAsync();
     }
 }

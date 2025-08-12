@@ -15,7 +15,7 @@ public class CreateUserHandlerUnitTests
         var context = new SampleApiDbContext(options);
         var users = new UserRepository(context);
         var passwordValidator = new PasswordValidator();
-        var service = new CreateUserHandler(users, context, passwordValidator);
+        var service = new CreateUserHandler(users, context);
 
         await service.HandleAsync("login", "password");
 

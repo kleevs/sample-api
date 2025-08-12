@@ -1,8 +1,6 @@
-﻿using Company.SampleApi.Contracts;
+﻿namespace Company.SampleApi;
 
-namespace Company.SampleApi;
-
-public class PasswordValidator : IPasswordValidator
+public class PasswordValidator
 {
     public bool IsValidPassword(string password) 
     {

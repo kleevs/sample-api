@@ -1,19 +1,62 @@
 ﻿using Company.SampleApi.Contracts;
+using Company.SampleApi.Entities;
+using Company.SampleApi.Tools;
 
 namespace Company.SampleApi;
 
-public class UserService : IUserService
+public class UserService
 {
-    private readonly IUserCreateService _newUsers;
-    private readonly IUserUpdateService _users;
+    private readonly IUserRepository _users;
+    private readonly PasswordValidator _passwordValidator;
 
-    public UserService(IUserCreateService newUsers, IUserUpdateService users)
+    public UserService(IUserRepository users)
     {
-        _newUsers = newUsers;
         _users = users;
+        _passwordValidator = new PasswordValidator();
     }
 
-    public Task CreateUser(string login, string password) => _newUsers.CreateUser(login, password);
+    public async Task CreateUser(string login, string password)
+    {
+        var existedUser = await _users.Where(u => u.Login == login).FirstOrDefaultAsync();
 
-    public Task UpdateUser(string login, string oldPassword, string password) => _users.UpdateUser(login, oldPassword, password);
+        if (existedUser is not null)
+        {
+            throw new Exception("login already exist");
+        }
+
+        if (!_passwordValidator.IsValidPassword(password))
+        {
+            throw new Exception("password is invalid");
+        }
+
+        var newUser = new User
+        {
+            Login = login,
+            Password = password
+        };
+
+        await _users.AddAsync(newUser);
+    }
+
+    public async Task UpdateUser(string login, string oldPassword, string password)
+    {
+        var existedUser = await _users.Where(u => u.Login == login && u.Password == oldPassword).FirstOrDefaultAsync();
+
+        if (existedUser is null)
+        {
+            throw new Exception($"user or password is invalid");
+        }
+
+        if (!_passwordValidator.IsValidPassword(password))
+        {
+            throw new Exception($"password is invalid");
+        }
+
+        var newUser = existedUser with
+        {
+            Password = password
+        };
+
+        await _users.UpdateAsync(newUser);
+    }
 }
