@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Company.SampleApi.Database.UserDb;
 
-public class UserRepository : ProxyDbSet<User>, IUserRepository
+public class UserRepository : Tools.ProxyDbSet<User>, IUserRepository
 {
     private readonly SampleApiDbContext _context;
 

@@ -1,7 +1,4 @@
-﻿
-using Company.SampleApi.Contracts;
-
-namespace Company.SampleApi.Api.Endpoints;
+﻿namespace Company.SampleApi.Api.Endpoints;
 
 public static class UsersEndpoint
 {

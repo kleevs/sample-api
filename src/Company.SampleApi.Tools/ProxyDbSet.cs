@@ -1,8 +1,7 @@
-﻿namespace Company.SampleApi.Database.UserDb;
-
-using System.Collections;
+﻿using System.Collections;
 using System.Linq.Expressions;
 
+namespace Company.SampleApi.Tools;
 
 public class AsyncEnumerator<TEntity> : IAsyncEnumerator<TEntity>
 {
