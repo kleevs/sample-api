@@ -1,5 +1,6 @@
 using Company.SampleApi.Api.Endpoints;
 using Company.SampleApi.Database;
+using Company.SampleApi.OAuthServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSampleApiDbContext();
+builder.Services.AddOAuthServer();
 builder.Services.AddUsers();
+builder.Services.AddCors();
 
 var app = builder.Build();
 
@@ -20,6 +23,13 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(policy =>
+{
+    policy.AllowAnyOrigin();
+    policy.AllowAnyHeader();
+    policy.AllowAnyMethod();
+});
+app.UseOAuthServer();
 
 app.MapUsers();
 
