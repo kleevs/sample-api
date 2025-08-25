@@ -1,0 +1,61 @@
+﻿@page
+@model Company.SampleApi.Api.Pages.LoginModel
+@{
+    ViewData["Title"] = "Connexion";
+}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+        <title>@ViewData["Title"]</title>
+    </head>
+    <body>
+        <div class="min-h-screen flex items-center justify-center bg-gray-100">
+            <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+                <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Connexion à votre compte</h2>
+
+                <form action="/signin" method="post" class="space-y-5">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="text-red-500 text-sm mb-4"></div>
+
+                    <div>
+                        <label asp-for="Email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input asp-for="Email" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none" />
+                        <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Password" class="block text-sm font-medium text-gray-700">Mot de passe</label>
+                        <input asp-for="Password" type="password" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:outline-none" />
+                        <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input asp-for="RememberMe" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                            <label asp-for="RememberMe" class="ml-2 block text-sm text-gray-900">Se souvenir de moi</label>
+                        </div>
+
+                        <a href="#" class="text-sm text-blue-600 hover:underline">Mot de passe oublié ?</a>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow">
+                        Se connecter
+                    </button>
+                </form>
+
+                <p class="mt-6 text-center text-sm text-gray-600">
+                    Pas encore de compte ?
+                    <a href="#" class="text-blue-600 hover:underline">Créer un compte</a>
+                </p>
+            </div>
+        </div>
+    </body>
+</html>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

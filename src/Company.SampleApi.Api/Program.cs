@@ -1,6 +1,8 @@
 using Company.SampleApi.Api.Endpoints;
+using Company.SampleApi.Api.Pages;
 using Company.SampleApi.Database;
 using Company.SampleApi.OAuthServer;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ builder.Services.AddSampleApiDbContext();
 builder.Services.AddOAuthServer();
 builder.Services.AddUsers();
 builder.Services.AddCors();
+builder.Services.AddAntiforgery();
+builder.Services.AddAuthentication().AddCookie("oauth_cookie", c => c.LoginPath = "/Login");
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -30,7 +35,12 @@ app.UseCors(policy =>
     policy.AllowAnyMethod();
 });
 app.UseOAuthServer();
+app.UseAntiforgery();
 
 app.MapUsers();
+app.MapPost("signin", ([FromForm] LoginModel model) => 
+{
+});
+app.MapRazorPages();
 
 app.Run();

@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.SampleApi.UnitTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.SampleApi.Tools.Testing", "tests\Company.SampleApi.Tools.Testing\Company.SampleApi.Tools.Testing.csproj", "{EA540330-62E9-4563-B526-F443FFB0FFDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Company.SampleApi.OAuthServer", "src\Company.SampleApi.OAuthServer\Company.SampleApi.OAuthServer.csproj", "{51FF2E37-7811-418D-8CB5-B41E9A465C48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Company.SampleApi.OAuthServer", "src\Company.SampleApi.OAuthServer\Company.SampleApi.OAuthServer.csproj", "{51FF2E37-7811-418D-8CB5-B41E9A465C48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

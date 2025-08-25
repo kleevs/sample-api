@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,17 +7,17 @@ namespace Company.SampleApi.OAuthServer;
 
 public static class OAuthServerConfiguration
 {
-    public static IServiceCollection AddOAuthServer(this IServiceCollection services)
+    public static IServiceCollection AddOAuthServer(this IServiceCollection services) => AddOAuthServer(services, (e) => { });
+    public static IServiceCollection AddOAuthServer(this IServiceCollection services, Action<OAuthServerOptions> configBuilder)
     {
         var config = new OAuthServerOptions
         {
             ConfigurationEndpoint = "oauth/.well-known/openid-configuration",
             AuthorizationEndpoint = "oauth/authorize",
             TokenEndpoint = "oauth/token",
-            LoginPageEndpoint = "oauth/login",
-            LoginEndpoint = "oauth/login",
             AuthenticationScheme = "oauth_cookie"
         };
+        configBuilder(config);
         services.AddHttpContextAccessor();
         services.AddDataProtection();
         services.AddScoped<AuthorizationEndpointHandler>();
@@ -24,7 +25,6 @@ public static class OAuthServerConfiguration
         services.AddScoped<ConfigurationEndpointHandler>();
         services.AddScoped<LoginPageEndpointHandler>();
         services.AddScoped<LoginEndpointHandler>();
-        services.AddAuthentication().AddCookie(config.AuthenticationScheme, c => c.LoginPath = $"/{config.LoginPageEndpoint}");
         services.AddAuthorization();
         services.AddSingleton(config);
         return services;
@@ -33,10 +33,9 @@ public static class OAuthServerConfiguration
     public static T UseOAuthServer<T>(this T app) where T : IEndpointRouteBuilder, IApplicationBuilder
     {
         var config = app.ServiceProvider.GetRequiredService<OAuthServerOptions>();
-        app.MapGet(config.LoginPageEndpoint, (LoginPageEndpointHandler h) => h.Handle());
-        app.MapPost(config.LoginEndpoint, (LoginEndpointHandler h, LoginPayload payload) => h.Handle(payload));
-        app.MapGet(config.AuthorizationEndpoint, (AuthorizationEndpointHandler h) => h.Handle()).RequireAuthorization((policy) => policy.AddAuthenticationSchemes(config.AuthenticationScheme));
-        app.MapGet(config.TokenEndpoint, (TokenEndpointHandler h) => h.Handle()).RequireAuthorization();
+        var policy = new AuthorizationPolicyBuilder().AddAuthenticationSchemes(config.AuthenticationScheme).RequireAuthenticatedUser().Build();
+        app.MapGet(config.AuthorizationEndpoint, (AuthorizationEndpointHandler h) => h.Handle()).RequireAuthorization(policy);
+        app.MapGet(config.TokenEndpoint, (TokenEndpointHandler h) => h.Handle()).RequireAuthorization(policy);
         app.MapGet(config.ConfigurationEndpoint, (ConfigurationEndpointHandler h) => h.Handle(config)).AllowAnonymous();
         return app;
     }
@@ -44,11 +43,9 @@ public static class OAuthServerConfiguration
 
 public class OAuthServerOptions
 {
-    public required string ConfigurationEndpoint { get; init; }
-    public required string AuthorizationEndpoint { get; init; }
-    public required string TokenEndpoint { get; init; }
-    public required string LoginPageEndpoint { get; init; }
-    public required string LoginEndpoint { get; init; }
-    public required string AuthenticationScheme { get; init; }
+    public required string ConfigurationEndpoint { get; set; }
+    public required string AuthorizationEndpoint { get; set; }
+    public required string TokenEndpoint { get; set; }
+    public required string AuthenticationScheme { get; set; }
 }
 
