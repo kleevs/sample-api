@@ -15,6 +15,7 @@ public static class OAuthServerConfiguration
             ConfigurationEndpoint = "oauth/.well-known/openid-configuration",
             AuthorizationEndpoint = "oauth/authorize",
             TokenEndpoint = "oauth/token",
+            UserinfoEndpoint = "oauth/userinfo",
             AuthenticationScheme = "oauth_cookie"
         };
         configBuilder(config);
@@ -23,8 +24,6 @@ public static class OAuthServerConfiguration
         services.AddScoped<AuthorizationEndpointHandler>();
         services.AddScoped<TokenEndpointHandler>();
         services.AddScoped<ConfigurationEndpointHandler>();
-        services.AddScoped<LoginPageEndpointHandler>();
-        services.AddScoped<LoginEndpointHandler>();
         services.AddAuthorization();
         services.AddSingleton(config);
         return services;
@@ -35,7 +34,8 @@ public static class OAuthServerConfiguration
         var config = app.ServiceProvider.GetRequiredService<OAuthServerOptions>();
         var policy = new AuthorizationPolicyBuilder().AddAuthenticationSchemes(config.AuthenticationScheme).RequireAuthenticatedUser().Build();
         app.MapGet(config.AuthorizationEndpoint, (AuthorizationEndpointHandler h) => h.Handle()).RequireAuthorization(policy);
-        app.MapGet(config.TokenEndpoint, (TokenEndpointHandler h) => h.Handle()).RequireAuthorization(policy);
+        app.MapPost(config.TokenEndpoint, (TokenEndpointHandler h) => h.Handle()).DisableAntiforgery();
+        app.MapPost(config.UserinfoEndpoint, () => false).DisableAntiforgery();
         app.MapGet(config.ConfigurationEndpoint, (ConfigurationEndpointHandler h) => h.Handle(config)).AllowAnonymous();
         return app;
     }
@@ -46,6 +46,7 @@ public class OAuthServerOptions
     public required string ConfigurationEndpoint { get; set; }
     public required string AuthorizationEndpoint { get; set; }
     public required string TokenEndpoint { get; set; }
+    public required string UserinfoEndpoint { get; set; }
     public required string AuthenticationScheme { get; set; }
 }
 

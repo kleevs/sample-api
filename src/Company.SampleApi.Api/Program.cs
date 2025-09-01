@@ -2,6 +2,8 @@ using Company.SampleApi.Api.Endpoints;
 using Company.SampleApi.Api.Pages;
 using Company.SampleApi.Database;
 using Company.SampleApi.OAuthServer;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,11 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSampleApiDbContext();
-builder.Services.AddOAuthServer();
+builder.Services.AddOAuthServer(c => c.AuthenticationScheme = CookieAuthenticationDefaults.AuthenticationScheme);
 builder.Services.AddUsers();
 builder.Services.AddCors();
 builder.Services.AddAntiforgery();
-builder.Services.AddAuthentication().AddCookie("oauth_cookie", c => c.LoginPath = "/Login");
+builder.Services.AddAuthentication().AddCookie(c => 
+{ 
+    c.LoginPath = "/Login";
+});
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
@@ -38,9 +43,7 @@ app.UseOAuthServer();
 app.UseAntiforgery();
 
 app.MapUsers();
-app.MapPost("signin", ([FromForm] LoginModel model) => 
-{
-});
+
 app.MapRazorPages();
 
 app.Run();

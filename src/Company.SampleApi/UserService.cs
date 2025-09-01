@@ -59,4 +59,21 @@ public class UserService
 
         await _users.UpdateAsync(newUser);
     }
+
+    public async Task<IEnumerable<User>> SearchUser(string? login, string? password)
+    {
+        var query = _users.AsQueryable();
+
+        if (!string.IsNullOrEmpty(login))
+        {
+            query = query.Where(_ => _.Login == login);
+        }
+
+        if (!string.IsNullOrEmpty(password))
+        {
+            query = query.Where(_ => _.Password == password);
+        }
+
+        return await query.ToListAsync();
+    }
 }

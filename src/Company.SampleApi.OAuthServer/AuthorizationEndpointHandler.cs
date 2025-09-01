@@ -32,6 +32,7 @@ public class AuthorizationEndpointHandler
             CodeChallenge = codeChallenge,
             CodeChallengeMethod = codeChallengeMethod,
             RedirectUri = redirectUri,
+            Scope = scope,
             Expiry = DateTime.Now.AddMinutes(5)
         };
 

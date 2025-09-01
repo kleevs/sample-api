@@ -1,4 +1,6 @@
-﻿namespace Company.SampleApi.Api.Endpoints;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Company.SampleApi.Api.Endpoints;
 
 public static class UsersEndpoint
 {

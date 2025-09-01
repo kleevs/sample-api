@@ -1,4 +1,5 @@
 ﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @model Company.SampleApi.Api.Pages.LoginModel
 @{
     ViewData["Title"] = "Connexion";
@@ -17,7 +18,7 @@
             <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
                 <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Connexion à votre compte</h2>
 
-                <form action="/signin" method="post" class="space-y-5">
+                <form method="post" class="space-y-5">
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="All" class="text-red-500 text-sm mb-4"></div>
 
