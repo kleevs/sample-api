@@ -84,16 +84,27 @@ public class TokenEndpointHandler
         var token = new JwtSecurityToken(
             issuer: _issuer,
             audience: _audience,
-            claims: claims,
+            claims: [new Claim("sub", "me")],
             expires: DateTime.Now.AddMinutes(15),
             signingCredentials: credentials
         );
 
+        var profile = new JwtSecurityToken(
+            issuer: _issuer,
+            audience: _audience,
+            claims: [new Claim("sub", "me")],
+            expires: DateTime.Now.AddHours(1),
+            signingCredentials: credentials
+        );
+
+
         var accesstoken = new JwtSecurityTokenHandler().WriteToken(token);
+        var idtoken = new JwtSecurityTokenHandler().WriteToken(profile);
 
         return new TokenResponse
         {
-            Access_Token = accesstoken,
+            Access_token = accesstoken,
+            Id_token = idtoken,
             Refresh_token = string.Empty,
             Token_type = "Bearer",
             Expires_in = DateTimeOffset.Now.AddMinutes(15).ToUnixTimeSeconds(),
@@ -113,7 +124,8 @@ public record TokenPayload
 
 public record TokenResponse
 {
-    public required string Access_Token { get; init; }
+    public required string Access_token { get; init; }
+    public required string Id_token { get; init; }
     public required string Token_type { get; init; }
     public required string Refresh_token { get; init; }
     public long Expires_in { get; init; }
