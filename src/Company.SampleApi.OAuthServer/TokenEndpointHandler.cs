@@ -17,6 +17,7 @@ public class TokenEndpointHandler
     private readonly string _jwtKey = "azerty1234azerty1234azerty1234azerty1234";
     private readonly string _audience = "audience";
     private readonly string _issuer = "issuer";
+    private readonly string[] _authorizedGrantType = ["authorization_code", "refresh_token"];
 
     public TokenEndpointHandler(IHttpContextAccessor httpRequestAccessor, IDataProtectionProvider dataProtectionProvider)
     {
@@ -38,18 +39,18 @@ public class TokenEndpointHandler
             {
                 case "grant_type" : payload = payload with { Grant_type = value }; break;
                 case "code" : payload = payload with { Code = value }; break;
+                case "refresh_token": payload = payload with { Code = value }; break;
                 case "code_verifier": payload = payload with { Code_verifier = value }; break;
                 case "client_id" : payload = payload with { Client_id = value }; break;
-                case "redirect_uri": payload = payload with { Redirect_uri = value }; break;
             }
         }
 
-        if (string.IsNullOrEmpty(payload.Code)) 
+        if (!_authorizedGrantType.Contains(payload.Grant_type)) 
         {
             throw new Exception();
         }
 
-        if (string.IsNullOrEmpty(payload.Code_verifier))
+        if (string.IsNullOrEmpty(payload.Code)) 
         {
             throw new Exception();
         }
@@ -66,12 +67,25 @@ public class TokenEndpointHandler
             throw new Exception();
         }
 
-        using var sha256 = SHA256.Create();
-        var codeChallenge = Base64UrlTextEncoder.Encode(sha256.ComputeHash(Encoding.ASCII.GetBytes(payload.Code_verifier)));
-
-        if (codeChallenge != authCode.CodeChallenge) 
+        if (payload.Grant_type == "authorization_code")
         {
-            throw new Exception(); 
+            if (string.IsNullOrEmpty(payload.Code_verifier))
+            {
+                throw new Exception();
+            }
+
+            using var sha256 = SHA256.Create();
+            var codeChallenge = Base64UrlTextEncoder.Encode(sha256.ComputeHash(Encoding.ASCII.GetBytes(payload.Code_verifier)));
+
+            if (codeChallenge != authCode.CodeChallenge)
+            {
+                throw new Exception();
+            }
+        }
+
+        if (DateTime.Now > authCode.Expiry) 
+        {
+            throw new Exception();
         }
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
@@ -79,12 +93,14 @@ public class TokenEndpointHandler
 
         var claims = new Claim[]
         {
+            new Claim("sub", "me"), 
+            new Claim(ClaimTypes.Upn, authCode.Login)
         };
 
         var token = new JwtSecurityToken(
             issuer: _issuer,
             audience: _audience,
-            claims: [new Claim("sub", "me")],
+            claims: claims,
             expires: DateTime.Now.AddMinutes(15),
             signingCredentials: credentials
         );
@@ -92,22 +108,22 @@ public class TokenEndpointHandler
         var profile = new JwtSecurityToken(
             issuer: _issuer,
             audience: _audience,
-            claims: [new Claim("sub", "me")],
+            claims: claims,
             expires: DateTime.Now.AddHours(1),
             signingCredentials: credentials
         );
 
-
         var accesstoken = new JwtSecurityTokenHandler().WriteToken(token);
         var idtoken = new JwtSecurityTokenHandler().WriteToken(profile);
+        var refreshToken = _dataProtector.Protect(JsonSerializer.Serialize(authCode with { Expiry = DateTime.Now.AddHours(1)}));
 
         return new TokenResponse
         {
             Access_token = accesstoken,
             Id_token = idtoken,
-            Refresh_token = string.Empty,
+            Refresh_token = refreshToken,
             Token_type = "Bearer",
-            Expires_in = DateTimeOffset.Now.AddMinutes(15).ToUnixTimeSeconds(),
+            Expires_in = 900,
             Scope = authCode.Scope ?? string.Empty
         };
     }
@@ -116,7 +132,6 @@ public class TokenEndpointHandler
 public record TokenPayload 
 {
     public string? Grant_type { get; init; }
-    public string? Redirect_uri { get; init; }
     public string? Code { get; init; }
     public string? Code_verifier { get; init; }
     public string? Client_id { get; init; }
