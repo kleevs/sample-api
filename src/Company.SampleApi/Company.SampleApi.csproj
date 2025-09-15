@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetToolbox.Linq" Version="8.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Company.SampleApi.Entities\Company.SampleApi.Entities.csproj" />
     <ProjectReference Include="..\Company.SampleApi.Tools\Company.SampleApi.Tools.csproj" />
   </ItemGroup>

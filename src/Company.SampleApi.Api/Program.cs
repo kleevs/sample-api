@@ -1,10 +1,7 @@
 using Company.SampleApi.Api.Endpoints;
-using Company.SampleApi.Api.Pages;
 using Company.SampleApi.Database;
 using Company.SampleApi.OAuthServer;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 

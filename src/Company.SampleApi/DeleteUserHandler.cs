@@ -1,5 +1,5 @@
 ﻿using Company.SampleApi.Contracts;
-using Company.SampleApi.Tools;
+using System.Linq.Async;
 
 namespace Company.SampleApi;
 

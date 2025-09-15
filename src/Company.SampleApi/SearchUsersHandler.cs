@@ -1,6 +1,5 @@
-﻿using Company.SampleApi.Contracts;
-using Company.SampleApi.Entities;
-using Company.SampleApi.Tools;
+﻿using Company.SampleApi.Entities;
+using System.Linq.Async;
 
 namespace Company.SampleApi;
 
